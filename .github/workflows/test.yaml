@@ -61,12 +61,23 @@ jobs:
 
     - name: Install python dependencies
       run: pip install -r requirements-dev.txt
-
-    - name: Compile Code
-      run: brownie compile --size
+      
+    - name: Download compilers
+      run: python scripts/download_compilers.py
+    
+    - name: install axel
+      run: sudo apt-get install -y axel --no-install-recommends
+    
+    - name: download deployments.db
+      run: axel -o $HOME/deployments.db https://robowoofystorage.blob.core.windows.net/deploymentsdb/deployments.db
+    
+    - name: brownie networks
+      run: brownie networks list true
+    - name: copy deployments db
+      run: sudo chmod 777 ~/deployments.db && sudo mv ~/deployments.db ~/.brownie/
 
     - name: Run Address Check
       env:
         ETHERSCAN_TOKEN: MW5CQA6QK5YMJXP2WP3RA36HM5A7RA1IHA
         WEB3_INFURA_PROJECT_ID: b7821200399e4be2b4e5dbdf06fbe85b
-      run: brownie run scripts/check_all_addresses.py
+      run: brownie run scripts/check_all_addresses.py --network mainnet-fork

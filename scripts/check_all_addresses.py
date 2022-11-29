@@ -1,7 +1,9 @@
 from brownie import Contract, accounts, web3, chain, ZERO_ADDRESS
+from pathlib import Path
+import os
+import json
 
-
-def check_all_addresses():
+def main():
     # pulled this from my ape-safe testing page, used for checking that address registry isn't compromised
     # fetch all of our vaults and strategies
     vaults_and_strategies = []
@@ -17,7 +19,7 @@ def check_all_addresses():
         for x in range(num_vaults):
             vault = yearn_registry.vaults(token, x)
             vaults_and_strategies.append(vault)
-            vault_contract = safe.contract(vault)
+            vault_contract = Contract(vault)
             # print("This is our vault:", vault_contract.name(), "Version:", vault_contract.apiVersion())
             # get each strategy attached
             for strat_length in range(20):
@@ -30,7 +32,7 @@ def check_all_addresses():
 
     print("Number of addresses:", len(vaults_and_strategies))
 
-    f = open("../ethereum.json")
+    f = open(os.path.join(Path().resolve(), 'ethereum.json'))
     eth_addresses = json.load(f)
     eth_strategies = eth_addresses["strategies"]
     level_one = list(eth_strategies.keys())
